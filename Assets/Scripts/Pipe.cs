@@ -1,33 +1,36 @@
-using System;
 using UnityEngine;
 
 public class Pipe : MonoBehaviour
 {
     private GameObject gm;
-    public float speed;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public float speed = 2.5f;
+    public float destroyX = -6f;
+    private bool scored = false;
+
     void Start()
     {
         gm = GameObject.FindGameObjectWithTag("GameController");
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
-    }
+        if (gm.GetComponent<GameManager>().gameOver) return;
 
-    private void FixedUpdate()
-    {
-        Vector3 pos = GetComponent<Transform>().position;
-        pos.x -= speed;
-        GetComponent<Transform>().position = pos;
+        Vector3 pos = transform.position;
+        pos.x -= speed * Time.deltaTime;
+        transform.position = pos;
+
+        if (pos.x < destroyX)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && !scored)
         {
+            scored = true;
             gm.GetComponent<GameManager>().AddScore(1);
         }
     }
